@@ -58,12 +58,12 @@ public class TestController {
         Integer median2 = 0;
 
 
-        for (int i = 0; i < operators.size()-1; i++) {
+        for (int i = 0; i < operators.size(); i++) {
             if(operators.size()%2==1){
-                median2 = Integer.parseInt(operators.get(operators.size()/2+1/2).getSubscriptionFeePerMonth());
+                median2 = Integer.parseInt(operators.get((operators.size()-1)/2+1/2).getSubscriptionFeePerMonth());
             }else if(operators.size()%2==0){
-                median2 = (Integer.parseInt(operators.get(operators.size()/2).getSubscriptionFeePerMonth())+
-                        Integer.parseInt(operators.get(operators.size()/2+1).getSubscriptionFeePerMonth()))/2;
+                median2 = (Integer.parseInt(operators.get((operators.size()-1)/2).getSubscriptionFeePerMonth())+
+                        Integer.parseInt(operators.get((operators.size()-1)/2+1).getSubscriptionFeePerMonth()))/2;
             }
 
         }
