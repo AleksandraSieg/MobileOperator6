@@ -1,5 +1,6 @@
 package pl.madison.controller;
 
+import org.hibernate.mapping.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.madison.dao.MobileOperatorDao;
 import pl.madison.domain.MobileOperator;
+import pl.madison.utils.MobileOperatorComparator;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,32 +33,47 @@ public class TestController {
     @RequestMapping(value = "/averageMonthlyPayment", method = RequestMethod.GET)
     public String average(){
         double sum = 0;
+        int counter = 0;
 
         for (MobileOperator mobileOperator : mobileOperatorDao.findAll()) {
-            sum = sum + mobileOperator.getSubscriptionFeePerMonth();
+            sum = sum + Integer.parseInt(mobileOperator.getSubscriptionFeePerMonth());
+            counter++;
         }
 
-        double average = sum/mobileOperatorDao.count();
+        double average = sum/counter;
 
         return "The monthly average payment is: " + average;
     }
 
     @RequestMapping(value = "/median", method = RequestMethod.GET)
     public String median(){
-        int size = ((List<MobileOperator>)mobileOperatorDao.findAll()).size();
-        double[] numbers = new double[size];
+
         List<MobileOperator> operators = new ArrayList<MobileOperator>();
         operators = (List<MobileOperator>)mobileOperatorDao.findAll();
+        int[] numbers = new int[operators.size()];
 
-        //nie skonczona cos mi sie pieprzy gdy robie w klasie MobileOperator implements Comparable;(
+        Collections.sort(operators, new MobileOperatorComparator());
+
+        MobileOperator median = null;
+        Integer median2 = 0;
 
 
-        return "" + operators;
+        for (int i = 0; i < operators.size()-1; i++) {
+            if(operators.size()%2==1){
+                median2 = Integer.parseInt(operators.get(operators.size()/2+1/2).getSubscriptionFeePerMonth());
+            }else if(operators.size()%2==0){
+                median2 = (Integer.parseInt(operators.get(operators.size()/2).getSubscriptionFeePerMonth())+
+                        Integer.parseInt(operators.get(operators.size()/2+1).getSubscriptionFeePerMonth()))/2;
+            }
+
+        }
+
+        return "median = " + median2;
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
     public String update(@RequestParam("id") Long id, @RequestParam("name") String name,
-                         @RequestParam("subscriptionFeePerMonth") double subscriptionFeePerMonth) {
+                         @RequestParam("subscriptionFeePerMonth") String subscriptionFeePerMonth) {
         MobileOperator tempOp = mobileOperatorDao.findOne(id);
         tempOp.setName(name);
         tempOp.setSubscriptionFeePerMonth(subscriptionFeePerMonth);
@@ -78,7 +95,7 @@ public class TestController {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.PUT)
-    public String addRoom(@RequestParam("name") String name, @RequestParam("subscriptionFeePerMonth") int subscriptionFeePerMonth){
+    public String addRoom(@RequestParam("name") String name, @RequestParam("subscriptionFeePerMonth") String subscriptionFeePerMonth){
         MobileOperator tempOp = new MobileOperator();
         tempOp.setName(name);
         tempOp.setSubscriptionFeePerMonth(subscriptionFeePerMonth);

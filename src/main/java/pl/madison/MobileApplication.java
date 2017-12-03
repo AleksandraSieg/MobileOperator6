@@ -26,10 +26,10 @@ public class MobileApplication implements CommandLineRunner{
         mobileOp3.setName("ApplePie");
         mobileOp4.setName("Z-Mobile");
 
-        mobileOp1.setSubscriptionFeePerMonth(40.90);
-        mobileOp2.setSubscriptionFeePerMonth(58.23);
-        mobileOp3.setSubscriptionFeePerMonth(78.12);
-        mobileOp4.setSubscriptionFeePerMonth(30.13);
+        mobileOp1.setSubscriptionFeePerMonth("40");
+        mobileOp2.setSubscriptionFeePerMonth("58");
+        mobileOp3.setSubscriptionFeePerMonth("78");
+        mobileOp4.setSubscriptionFeePerMonth("30");
 
         mobileDao.save(mobileOp1);
         mobileDao.save(mobileOp2);

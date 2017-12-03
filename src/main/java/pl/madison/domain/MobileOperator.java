@@ -14,7 +14,7 @@ public class MobileOperator{
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
-    private double subscriptionFeePerMonth; //co za uboga oferta operatora :P
+    private String subscriptionFeePerMonth; //co za uboga oferta operatora :P
 
 
 
