@@ -6,6 +6,10 @@ import java.util.Comparator;
 
 public class MobileOperatorComparator implements Comparator<MobileOperator> {
     public int compare(MobileOperator o1, MobileOperator o2) {
-        return o1.getSubscriptionFeePerMonth().compareTo(o2.getSubscriptionFeePerMonth());
+        if( o1.getSubscriptionFeePerMonth()>o2.getSubscriptionFeePerMonth())
+            return 1;
+        if( o1.getSubscriptionFeePerMonth()<o2.getSubscriptionFeePerMonth())
+            return -1;
+        return 0;
     }
 }

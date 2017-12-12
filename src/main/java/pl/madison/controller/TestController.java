@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import pl.madison.dao.MobileOperatorDao;
 import pl.madison.domain.MobileOperator;
+import pl.madison.services.ImobileOperatorServices;
 import pl.madison.utils.MobileOperatorComparator;
 
 import java.util.ArrayList;
@@ -17,30 +18,27 @@ import java.util.List;
 @RestController
 public class TestController {
 
+//    @Autowired
+//    private MobileOperatorDao mobileOperatorDao;
+
     @Autowired
-    private MobileOperatorDao mobileOperatorDao;
+    private ImobileOperatorServices imobileOperatorServices;
+
     @RequestMapping(value = "/showOffer", method = RequestMethod.GET)
-    public String showOffer() {
-        String operatorTemp = "";
+    public List<MobileOperator> showOffer() {
 
-        for (MobileOperator mobileOperator : mobileOperatorDao.findAll()) {
-            operatorTemp = operatorTemp + mobileOperator;
-        }
-
-        return operatorTemp;
+        return (List<MobileOperator>)imobileOperatorServices.findAll();
     }
 
     @RequestMapping(value = "/averageMonthlyPayment", method = RequestMethod.GET)
     public String average(){
         double sum = 0;
-        int counter = 0;
 
-        for (MobileOperator mobileOperator : mobileOperatorDao.findAll()) {
-            sum = sum + Integer.parseInt(mobileOperator.getSubscriptionFeePerMonth());
-            counter++;
+        for (MobileOperator mobileOperator : imobileOperatorServices.findAll()) {
+            sum = sum + mobileOperator.getSubscriptionFeePerMonth();
         }
 
-        double average = sum/counter;
+        Double average = sum/imobileOperatorServices.count();
 
         return "The monthly average payment is: " + average;
     }
@@ -49,21 +47,19 @@ public class TestController {
     public String median(){
 
         List<MobileOperator> operators = new ArrayList<MobileOperator>();
-        operators = (List<MobileOperator>)mobileOperatorDao.findAll();
-        int[] numbers = new int[operators.size()];
+        operators = (List<MobileOperator>)imobileOperatorServices.findAll();
 
         Collections.sort(operators, new MobileOperatorComparator());
 
-        MobileOperator median = null;
-        Integer median2 = 0;
+        double median2 = 0;
 
 
         for (int i = 0; i < operators.size(); i++) {
             if(operators.size()%2==1){
-                median2 = Integer.parseInt(operators.get((operators.size()-1)/2+1/2).getSubscriptionFeePerMonth());
+                median2 = operators.get((operators.size()-1)/2+1/2).getSubscriptionFeePerMonth();
             }else if(operators.size()%2==0){
-                median2 = (Integer.parseInt(operators.get((operators.size()-1)/2).getSubscriptionFeePerMonth())+
-                        Integer.parseInt(operators.get((operators.size()-1)/2+1).getSubscriptionFeePerMonth()))/2;
+                median2 = (operators.get((operators.size()-1)/2).getSubscriptionFeePerMonth()+
+                        operators.get((operators.size()-1)/2+1).getSubscriptionFeePerMonth())/2;
             }
 
         }
@@ -73,36 +69,41 @@ public class TestController {
 
     @RequestMapping(value = "/update", method = RequestMethod.PUT)
     public String update(@RequestParam("id") Long id, @RequestParam("name") String name,
-                         @RequestParam("subscriptionFeePerMonth") String subscriptionFeePerMonth) {
-        MobileOperator tempOp = mobileOperatorDao.findOne(id);
-        tempOp.setName(name);
-        tempOp.setSubscriptionFeePerMonth(subscriptionFeePerMonth);
-        mobileOperatorDao.save(tempOp);
+                         @RequestParam("subscriptionFeePerMonth") double subscriptionFeePerMonth) {
+        MobileOperator tempOp = MobileOperator.builder().id(id).name(name)
+                .subscriptionFeePerMonth(subscriptionFeePerMonth).build();
+        imobileOperatorServices.save(tempOp);
 
         return "Your update has been completed;)";
     }
 
     @RequestMapping(value = "/delete", method = RequestMethod.DELETE)
-    public String deleteRoom(@RequestParam("id") Long id) {
-        mobileOperatorDao.delete(mobileOperatorDao.findOne(id));
+    public String delete(@RequestParam("id") Long id) {
+
+        imobileOperatorServices.delete(id);
         return "You have successfully deleted operator from database";
     }
 
     @RequestMapping(value = "/find", method = RequestMethod.GET)
-    public String findRoom(@RequestParam("id") Long id) {
-        MobileOperator tempOp = mobileOperatorDao.findOne(id);
+    public String find(@RequestParam("id") Long id) {
+        MobileOperator tempOp = imobileOperatorServices.findOne(id);
         return "" + tempOp;
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.PUT)
-    public String addRoom(@RequestParam("name") String name, @RequestParam("subscriptionFeePerMonth") String subscriptionFeePerMonth){
-        MobileOperator tempOp = new MobileOperator();
-        tempOp.setName(name);
-        tempOp.setSubscriptionFeePerMonth(subscriptionFeePerMonth);
-        mobileOperatorDao.save(tempOp);
+    public String add(@RequestParam("name") String name, @RequestParam("subscriptionFeePerMonth")
+            double subscriptionFeePerMonth){
+        MobileOperator tempOp = MobileOperator.builder().name(name)
+                .subscriptionFeePerMonth(subscriptionFeePerMonth).build();
+        imobileOperatorServices.save(tempOp);
         return "You have successfully added new operator";
     }
 
+
+    @RequestMapping(value="demo")
+    public String addTest(){
+        return "extra";
+    }
 
 
 }

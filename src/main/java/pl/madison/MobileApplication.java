@@ -13,23 +13,19 @@ public class MobileApplication implements CommandLineRunner{
         SpringApplication.run(MobileApplication.class, args);
     }
 
+    public MobileOperator createMobileOperator(String name, double subscriptionFeePerMonth){
+        return MobileOperator.builder().name(name).subscriptionFeePerMonth(subscriptionFeePerMonth).build();
+    }
+
     @Autowired
     private MobileOperatorDao mobileDao;
     public void run(String... strings) throws Exception {
-        MobileOperator mobileOp1 = new MobileOperator();
-        MobileOperator mobileOp2 = new MobileOperator();
-        MobileOperator mobileOp3 = new MobileOperator();
-        MobileOperator mobileOp4 = new MobileOperator();
 
-        mobileOp1.setName("Apple&Peer");
-        mobileOp2.setName("Baran");
-        mobileOp3.setName("ApplePie");
-        mobileOp4.setName("Z-Mobile");
+       MobileOperator mobileOp1 = createMobileOperator("Apple%Peer", 40D);
+       MobileOperator mobileOp2 = createMobileOperator("Baran", 58D);
+       MobileOperator mobileOp3 = createMobileOperator("ApplePie", 78D);
+       MobileOperator mobileOp4 = createMobileOperator("Z-mobile", 30D);
 
-        mobileOp1.setSubscriptionFeePerMonth("40");
-        mobileOp2.setSubscriptionFeePerMonth("58");
-        mobileOp3.setSubscriptionFeePerMonth("78");
-        mobileOp4.setSubscriptionFeePerMonth("30");
 
         mobileDao.save(mobileOp1);
         mobileDao.save(mobileOp2);
